@@ -430,6 +430,125 @@
     border-top: 1px solid var(--border);
   }
 
+  /* Dashboard */
+  .dash-section { margin-bottom: 2.5rem; }
+
+  .dash-section-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--accent-light);
+  }
+
+  .dash-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    table-layout: auto;
+  }
+
+  .dash-th-crit {
+    width: 170px;
+    background: var(--accent);
+    color: #fff;
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .dash-th-avg {
+    background: #1A1A1A;
+    color: #fff;
+    padding: 10px 14px;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    min-width: 150px;
+    border-left: 2px solid var(--accent);
+  }
+
+  .dash-th-user {
+    background: var(--surface2);
+    color: var(--text);
+    padding: 8px 14px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    border-left: 1px solid var(--border);
+    min-width: 130px;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dash-td-crit {
+    padding: 10px 14px;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    border-right: 2px solid var(--border);
+    vertical-align: middle;
+  }
+
+  .dash-td-avg {
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    border-left: 2px solid var(--accent);
+    background: #F2F2F2;
+    vertical-align: middle;
+    min-width: 150px;
+  }
+
+  .dash-td-bar {
+    padding: 10px 14px;
+    border-top: 1px solid var(--border);
+    border-left: 1px solid var(--border);
+    vertical-align: middle;
+    min-width: 130px;
+  }
+
+  .bar-wrap { display: flex; align-items: center; gap: 8px; }
+
+  .bar-track {
+    flex: 1;
+    height: 10px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .bar-track.bar-track-avg { height: 14px; }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  .bar-val {
+    font-size: 12px;
+    font-weight: 700;
+    min-width: 26px;
+    text-align: right;
+  }
+
+  .dash-empty {
+    padding: 3rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
   /* Login Modal */
   .login-overlay {
     position: fixed; inset: 0;
@@ -605,6 +724,7 @@
   <div class="tab-nav">
     <button class="tab-btn active" onclick="showTab('overview')"><span class="tab-label">↗</span>Übersicht</button>
     <button class="tab-btn" onclick="showTab('assess')"><span class="tab-label">✓</span>Bewertung</button>
+    <button class="tab-btn" onclick="showTab('dashboard')"><span class="tab-label">▦</span>Dashboard</button>
   </div>
 
   <!-- OVERVIEW -->
@@ -654,6 +774,17 @@
         <button class="export-btn" onclick="exportJSON()" style="margin-left:8px;background:#1A1A1A;">↓ Export JSON</button>
       </div>
     </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="tab-dashboard" class="tab-panel">
+    <div class="category-header">
+      <div class="category-info">
+        <h2>Dashboard</h2>
+        <p>Vergleich aller Bewertungen nach Kriterium. Der Mittelwert über alle User ist jeweils zuerst dargestellt.</p>
+      </div>
+    </div>
+    <div id="dashboard-container"></div>
   </div>
 </main>
 
@@ -1139,8 +1270,85 @@ function showTab(id) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + id).classList.add('active');
-  const tabMap = { overview: 0, assess: 1 };
+  const tabMap = { overview: 0, assess: 1, dashboard: 2 };
   document.querySelectorAll('.tab-btn')[tabMap[id]].classList.add('active');
+  if (id === 'dashboard') buildDashboard();
+}
+
+function levelForValue(val) {
+  if (val < 1.5) return LEVELS[0];
+  if (val < 2.5) return LEVELS[1];
+  if (val < 3.5) return LEVELS[2];
+  if (val < 4.5) return LEVELS[3];
+  return LEVELS[4];
+}
+
+function renderBar(val, isAvg) {
+  const lv = levelForValue(val);
+  const pct = ((val / 5) * 100).toFixed(1);
+  const display = Number.isInteger(val) ? val : val.toFixed(1);
+  return `<div class="bar-wrap">
+    <div class="bar-track${isAvg ? ' bar-track-avg' : ''}">
+      <div class="bar-fill" style="width:${pct}%;background:${lv.color}"></div>
+    </div>
+    <span class="bar-val" style="color:${lv.color}">${display}</span>
+  </div>`;
+}
+
+async function buildDashboard() {
+  const container = document.getElementById('dashboard-container');
+  container.innerHTML = '<p class="dash-empty">Lädt …</p>';
+  try {
+    const res = await fetch('/api/dashboard');
+    const { users } = await res.json();
+
+    if (users.length === 0) {
+      container.innerHTML = '<p class="dash-empty">Noch keine Bewertungen vorhanden.</p>';
+      return;
+    }
+
+    let html = '';
+    Object.entries(CATEGORIES).forEach(([catKey, cat]) => {
+      const userHeaders = users.map(u =>
+        `<th class="dash-th-user" title="${u.username}">${u.username}</th>`
+      ).join('');
+
+      const rows = cat.criteria.map(crit => {
+        const vals = users.map(u => u.assessment[crit.id] || 1);
+        const avg = vals.reduce((s, v) => s + v, 0) / vals.length;
+
+        const userCells = users.map(u => {
+          const val = u.assessment[crit.id] || 1;
+          return `<td class="dash-td-bar">${renderBar(val, false)}</td>`;
+        }).join('');
+
+        return `<tr>
+          <td class="dash-td-crit">
+            <span class="crit-id">${crit.id}</span>
+            <span class="crit-name">${crit.name}</span>
+          </td>
+          <td class="dash-td-avg">${renderBar(avg, true)}</td>
+          ${userCells}
+        </tr>`;
+      }).join('');
+
+      html += `<div class="dash-section">
+        <div class="dash-section-title">${catKey} · ${cat.title}</div>
+        <table class="dash-table">
+          <thead><tr>
+            <th class="dash-th-crit">Kriterium</th>
+            <th class="dash-th-avg">Ø Mittelwert</th>
+            ${userHeaders}
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+    });
+
+    container.innerHTML = html;
+  } catch {
+    container.innerHTML = '<p class="dash-empty" style="color:#C0392B">Fehler beim Laden der Daten.</p>';
+  }
 }
 
 function exportResults() {

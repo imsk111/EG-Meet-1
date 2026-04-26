@@ -58,6 +58,15 @@ http.createServer(async (req, res) => {
     return json(res, 200, { ok: true });
   }
 
+  if (url.pathname === '/api/dashboard' && req.method === 'GET') {
+    const store = loadData();
+    const users = Object.entries(store.users).map(([name, data]) => ({
+      username: name,
+      assessment: data.assessment
+    }));
+    return json(res, 200, { users });
+  }
+
   if ((url.pathname === '/' || url.pathname === '/index.html') && req.method === 'GET') {
     fs.readFile(FILE, (err, data) => {
       if (err) { res.writeHead(500); return res.end('Server error'); }
