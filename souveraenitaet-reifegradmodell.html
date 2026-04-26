@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digitale Souveränität – Reifegradmodell</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F3EE;
+    --surface: #FFFFFF;
+    --surface2: #EDEAE3;
+    --border: #D8D4CB;
+    --text: #1A1916;
+    --text-muted: #6B6760;
+    --accent: #1A6B4A;
+    --accent-light: #E8F4EF;
+    --l1: #C0392B; --l1-bg: #FDF0EE; --l1-border: #E8B4AE;
+    --l2: #D68910; --l2-bg: #FEFAEE; --l2-border: #EDD98A;
+    --l3: #1A5276; --l3-bg: #EEF4FB; --l3-border: #A9C4DC;
+    --l4: #1E8449; --l4-bg: #EEF8F2; --l4-border: #9AD4B3;
+    --l5: #0E6655; --l5-bg: #EDF7F5; --l5-border: #7FC8BC;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-mono: 'DM Mono', 'Courier New', monospace;
+    --radius: 8px;
+    --transition: 200ms ease;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--text);
+    color: var(--bg);
+    padding: 2.5rem 2.5rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-inner {
+    max-width: 1300px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 2rem;
+  }
+
+  .header-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #8A8780;
+    margin-bottom: 0.5rem;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: 2rem;
+    line-height: 1.15;
+    color: #F5F3EE;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: #7FCDB3;
+  }
+
+  .legend {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-end;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    color: #8A8780;
+    letter-spacing: 0.05em;
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  main {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 2rem 2.5rem 4rem;
+  }
+
+  .tab-nav {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 2rem;
+    background: var(--surface2);
+    padding: 4px;
+    border-radius: var(--radius);
+    width: fit-content;
+  }
+
+  .tab-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    padding: 8px 16px;
+    border-radius: 5px;
+    color: var(--text-muted);
+    transition: all var(--transition);
+    white-space: nowrap;
+  }
+
+  .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.5); }
+
+  .tab-btn.active {
+    background: var(--surface);
+    color: var(--text);
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  .tab-label {
+    font-size: 9px;
+    opacity: 0.6;
+    margin-right: 4px;
+  }
+
+  .category-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .category-letter {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 3rem;
+    line-height: 1;
+    color: var(--accent);
+    opacity: 0.25;
+  }
+
+  .category-info h2 {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: 1.5rem;
+    color: var(--text);
+  }
+
+  .category-info p {
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-top: 4px;
+    max-width: 700px;
+  }
+
+  .core-question {
+    display: inline-block;
+    margin-top: 0.75rem;
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    padding: 6px 12px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: 11px;
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .matrix {
+    display: grid;
+    grid-template-columns: 200px repeat(5, 1fr);
+    gap: 2px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .matrix-cell {
+    background: var(--surface);
+    padding: 10px 12px;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: var(--text);
+    transition: background var(--transition);
+  }
+
+  .matrix-cell.col-header {
+    background: var(--text);
+    color: var(--bg);
+    text-align: center;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    padding: 10px 8px;
+  }
+
+  .level-num {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .level-name {
+    display: block;
+    font-size: 9px;
+    opacity: 0.7;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .matrix-cell.row-header {
+    background: var(--surface2);
+    border-right: 2px solid var(--border);
+  }
+
+  .crit-id {
+    display: block;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+  }
+
+  .crit-name {
+    display: block;
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.35;
+  }
+
+  .matrix-cell.l1 { background: var(--l1-bg); border-left: 3px solid var(--l1-border); color: #5C1A13; }
+  .matrix-cell.l2 { background: var(--l2-bg); border-left: 3px solid var(--l2-border); color: #6B4407; }
+  .matrix-cell.l3 { background: var(--l3-bg); border-left: 3px solid var(--l3-border); color: #0E2D45; }
+  .matrix-cell.l4 { background: var(--l4-bg); border-left: 3px solid var(--l4-border); color: #0D4025; }
+  .matrix-cell.l5 { background: var(--l5-bg); border-left: 3px solid var(--l5-border); color: #073D33; }
+
+  .matrix-cell.l1:hover { background: #FAD8D3; }
+  .matrix-cell.l2:hover { background: #FAEFBB; }
+  .matrix-cell.l3:hover { background: #D3E8F7; }
+  .matrix-cell.l4:hover { background: #C8EDD8; }
+  .matrix-cell.l5:hover { background: #B3E8DC; }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .assessment-section {
+    margin-top: 3rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+  }
+
+  .assessment-title {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+  }
+
+  .assess-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .assess-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+  }
+
+  .assess-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .assess-crit {
+    font-weight: 500;
+    font-size: 12px;
+  }
+
+  .assess-select {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--text);
+    padding: 4px 8px;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .assess-select:focus { border-color: var(--accent); }
+
+  .level-bar {
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+
+  .level-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease, background 0.4s ease;
+  }
+
+  .assess-level-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .summary-bar {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .summary-score {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .score-number {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--text);
+  }
+
+  .score-max {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .score-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .overall-bar {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .overall-bar-track {
+    height: 10px;
+    background: var(--surface2);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .overall-bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    background: var(--accent);
+    transition: width 0.5s ease;
+  }
+
+  .maturity-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+  }
+
+  .export-btn {
+    margin-left: auto;
+    background: var(--text);
+    color: var(--bg);
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 8px 18px;
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    transition: opacity var(--transition);
+  }
+
+  .export-btn:hover { opacity: 0.8; }
+
+  .overview-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .overview-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+  }
+
+  .ov-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1rem;
+  }
+
+  .ov-letter {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--accent);
+    opacity: 0.4;
+    line-height: 1;
+  }
+
+  .ov-title {
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .ov-score-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .ov-score-num {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 300;
+  }
+
+  .ov-score-max { font-size: 11px; color: var(--text-muted); }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="header-label">ZenDiS · Diskussionspapier · März 2026</div>
+      <h1>Digitale <em>Souveränität</em><br>Reifegradmodell</h1>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#C0392B"></div>1 · Initial</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#D68910"></div>2 · Bewusst</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#1A5276"></div>3 · Definiert</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#1E8449"></div>4 · Gesteuert</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#0E6655"></div>5 · Optimiert</div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="showTab('overview')"><span class="tab-label">↗</span>Übersicht</button>
+    <button class="tab-btn" onclick="showTab('A')"><span class="tab-label">A</span>Organisation</button>
+    <button class="tab-btn" onclick="showTab('B')"><span class="tab-label">B</span>Anwendungen</button>
+    <button class="tab-btn" onclick="showTab('C')"><span class="tab-label">C</span>Daten</button>
+    <button class="tab-btn" onclick="showTab('D')"><span class="tab-label">D</span>Betrieb</button>
+    <button class="tab-btn" onclick="showTab('assess')"><span class="tab-label">✓</span>Bewertung</button>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div id="tab-overview" class="tab-panel active">
+    <div class="category-header">
+      <div class="category-info">
+        <h2>Kriterien zur Messung Digitaler Souveränität</h2>
+        <p>Basierend auf den strategischen Zielen des IT-Planungsrats: Wechselmöglichkeit, Gestaltungsfähigkeit und Einflussnahme auf IT-Anbieter. Vier Kategorien, 15 Kriterien, je fünf Reifegradstufen.</p>
+      </div>
+    </div>
+    <div class="overview-panel" id="overview-cards"></div>
+  </div>
+
+  <!-- CATEGORY A -->
+  <div id="tab-A" class="tab-panel">
+    <div class="category-header">
+      <div class="category-letter">A</div>
+      <div class="category-info">
+        <h2>Organisation und Fähigkeiten</h2>
+        <p>Bewertet die Management- und Steuerungsfähigkeit einer Organisation hinsichtlich digital souveräner IT-Dienste.</p>
+        <span class="core-question">Ist die Organisation überhaupt in der Lage, Digitale Souveränität aktiv zu steuern?</span>
+      </div>
+    </div>
+    <div class="matrix" id="matrix-A"></div>
+  </div>
+
+  <!-- CATEGORY B -->
+  <div id="tab-B" class="tab-panel">
+    <div class="category-header">
+      <div class="category-letter">B</div>
+      <div class="category-info">
+        <h2>Digitale Anwendungen und Dienste</h2>
+        <p>Bewertet die Gestalt- und Austauschbarkeit genutzter Anwendungen sowie die Kontrolle über digitale Dienste.</p>
+        <span class="core-question">Ermöglichen die Anwendungen technologische Selbstbestimmung – oder führen sie zu Abhängigkeiten?</span>
+      </div>
+    </div>
+    <div class="matrix" id="matrix-B"></div>
+  </div>
+
+  <!-- CATEGORY C -->
+  <div id="tab-C" class="tab-panel">
+    <div class="category-header">
+      <div class="category-letter">C</div>
+      <div class="category-info">
+        <h2>Informationen und Daten</h2>
+        <p>Überprüft, inwieweit Datenhoheit und Datensouveränität gewährleistet sind – technisch, rechtlich und betrieblich.</p>
+        <span class="core-question">Können Behörden jederzeit die volle Kontrolle über ihre Daten ausüben?</span>
+      </div>
+    </div>
+    <div class="matrix" id="matrix-C"></div>
+  </div>
+
+  <!-- CATEGORY D -->
+  <div id="tab-D" class="tab-panel">
+    <div class="category-header">
+      <div class="category-letter">D</div>
+      <div class="category-info">
+        <h2>Betrieb und Infrastruktur</h2>
+        <p>Bewertet die technische und organisatorische Betriebssouveränität und Unabhängigkeit gegenüber externen Einflüssen.</p>
+        <span class="core-question">Kann die Verwaltung ihre Systeme dauerhaft, sicher und unabhängig betreiben?</span>
+      </div>
+    </div>
+    <div class="matrix" id="matrix-D"></div>
+  </div>
+
+  <!-- ASSESSMENT -->
+  <div id="tab-assess" class="tab-panel">
+    <div class="category-header">
+      <div class="category-info">
+        <h2>Selbstbewertung</h2>
+        <p>Wählen Sie für jedes Kriterium die zutreffende Reifegradstufe. Die Gesamtbewertung wird automatisch berechnet.</p>
+      </div>
+    </div>
+    <div id="assessment-container"></div>
+    <div class="assessment-section" style="margin-top:1.5rem;">
+      <div class="assessment-title">Gesamtergebnis</div>
+      <div class="summary-bar">
+        <div>
+          <div class="score-label">Gesamtpunktzahl</div>
+          <div class="summary-score">
+            <span class="score-number" id="total-score">0</span>
+            <span class="score-max">/ <span id="total-max">75</span></span>
+          </div>
+        </div>
+        <div class="overall-bar">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);margin-bottom:4px;">
+            <span>Reifegrad gesamt</span>
+            <span id="pct-label">0%</span>
+          </div>
+          <div class="overall-bar-track">
+            <div class="overall-bar-fill" id="overall-fill" style="width:0%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="score-label">Einstufung</div>
+          <div class="maturity-badge" id="maturity-badge" style="background:var(--l1-bg);color:var(--l1);">Initial</div>
+        </div>
+        <button class="export-btn" onclick="exportResults()">↓ Export CSV</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>ZenDiS · Zentrum für Digitale Souveränität der Öffentlichen Verwaltung GmbH · Bochum · 2026</footer>
+
+<script>
+const LEVELS = [
+  { num: 1, name: 'Initial',    color: '#C0392B', bg: '#FDF0EE', border: '#E8B4AE' },
+  { num: 2, name: 'Bewusst',   color: '#D68910', bg: '#FEFAEE', border: '#EDD98A' },
+  { num: 3, name: 'Definiert', color: '#1A5276', bg: '#EEF4FB', border: '#A9C4DC' },
+  { num: 4, name: 'Gesteuert', color: '#1E8449', bg: '#EEF8F2', border: '#9AD4B3' },
+  { num: 5, name: 'Optimiert', color: '#0E6655', bg: '#EDF7F5', border: '#7FC8BC' },
+];
+
+const CATEGORIES = {
+  A: {
+    title: 'Organisation und Fähigkeiten',
+    criteria: [
+      {
+        id: 'A1', name: 'Strategie',
+        levels: [
+          'Kein Bezug zu digitaler Souveränität in Strategie oder Leitlinien vorhanden.',
+          'Souveränität als Thema bekannt, aber nicht strategisch verankert.',
+          'Souveränität ist explizites Ziel in der Digitalstrategie der Organisation.',
+          'Strategie mit messbaren Zielen, regelmäßig überprüft und aktualisiert.',
+          'Strategie vernetzt mit Gesamtsteuerung; treibt aktiv Markt- und Politikgestaltung.'
+        ]
+      },
+      {
+        id: 'A2', name: 'IT-Governance & Management',
+        levels: [
+          'Keine definierten Verantwortlichkeiten oder Steuerungsprozesse im IT-Betrieb.',
+          'Erste Rollen benannt, aber Prozesse informal und lückenhaft.',
+          'Verantwortlichkeiten, Prozesse und Steuerungsstrukturen dokumentiert und eingeführt.',
+          'Governance wird regelmäßig auditiert und an Veränderungen angepasst.',
+          'Vollständig integrierte, kontinuierlich verbesserte Governance-Strukturen.'
+        ]
+      },
+      {
+        id: 'A3', name: 'Risikomanagement',
+        levels: [
+          'Keine Erfassung technologischer oder strategischer Abhängigkeitsrisiken.',
+          'Risiken ad hoc identifiziert, keine systematische Erfassung.',
+          'Risikoregister vorhanden, Abhängigkeiten systematisch erfasst.',
+          'Risiken priorisiert, mit Maßnahmen hinterlegt und regelmäßig bewertet.',
+          'Proaktives Risikomanagement mit Frühwarnsystem und kontinuierlicher Anpassung.'
+        ]
+      },
+      {
+        id: 'A4', name: 'Beschaffung & Vergabe',
+        levels: [
+          'Beschaffung ohne Souveränitätskriterien; Lock-in wird nicht berücksichtigt.',
+          'Souveränitätsaspekte punktuell berücksichtigt, ohne systematischen Rahmen.',
+          'Vergaberichtlinien fordern Offenheit, Wettbewerb und Alternativenprüfung.',
+          'Souveränitätskriterien verbindlich in Ausschreibungen; Compliance wird geprüft.',
+          'Beschaffung steuert aktiv Marktentwicklung; Open Source und Standards bevorzugt.'
+        ]
+      },
+      {
+        id: 'A5', name: 'Auftraggeberfähigkeit',
+        levels: [
+          'Keine eigenständige Steuerung von IT-Projekten; vollständige Anbieterabhängigkeit.',
+          'Grundlegende Projektsteuerung vorhanden, aber kaum Anbieterkontrolle.',
+          'IT-Projekte eigenständig geführt; Anbieterleistungen werden bewertet.',
+          'Starke Auftraggeber-Kompetenz; Anbieter werden wirksam gesteuert und kontrolliert.',
+          'Benchmark-fähige Auftraggeberkompetenz; Marktmacht gezielt genutzt.'
+        ]
+      },
+      {
+        id: 'A6', name: 'Kompetenzen',
+        levels: [
+          'Keine IT-Fachkräfte; vollständige externe Abhängigkeit bei technischen Entscheidungen.',
+          'Basiskenntnisse vorhanden; Kompetenzlücken erkannt, aber nicht systematisch geschlossen.',
+          'Kompetenzen strukturiert erfasst; Weiterbildungsprogramme etabliert.',
+          'Kompetenzen decken alle souveränitätskritischen Bereiche ab; Wissen wird gesichert.',
+          'Wissensmanagement und Kompetenzentwicklung institutionalisiert; attraktiver Arbeitgeber.'
+        ]
+      }
+    ]
+  },
+  B: {
+    title: 'Digitale Anwendungen und Dienste',
+    criteria: [
+      {
+        id: 'B1', name: 'Transparenz / Dokumentation',
+        levels: [
+          'Keine Dokumentation der eingesetzten Anwendungen vorhanden.',
+          'Fragmentierte Dokumentation, nicht aktuell oder nicht zugänglich.',
+          'Umfassende Dokumentation von Funktionalität, Schnittstellen und Datenstrukturen vorhanden.',
+          'Dokumentation laufend gepflegt; Auditierbarkeit und Wartbarkeit gewährleistet.',
+          'Dokumentation automatisiert, versioniert und integraler Bestandteil des Entwicklungsprozesses.'
+        ]
+      },
+      {
+        id: 'B2', name: 'Lieferkette',
+        levels: [
+          'Herkunft von Hardware- und Software-Komponenten unbekannt.',
+          'Teilweise bekannt, aber keine systematische Überprüfung.',
+          'Lieferkette der wesentlichen Komponenten bekannt und dokumentiert.',
+          'Regelmäßige Überprüfung der Lieferkette; Risiken aus Nicht-EU-Anbietern erfasst.',
+          'Vollständige, auditierte Lieferkettentransparenz; SBOM für alle kritischen Systeme.'
+        ]
+      },
+      {
+        id: 'B3', name: 'Architektur / Modularität',
+        levels: [
+          'Monolithische, nicht portierbare Anwendungen ohne Entkopplungsmöglichkeit.',
+          'Teilweise modular, aber Abhängigkeiten zwischen Komponenten hoch.',
+          'Anwendungen modular aufgebaut und technisch entkoppelbar.',
+          'Modulare Architektur systematisch umgesetzt; Portabilität nachgewiesen.',
+          'Cloud-agnostisch, vollständig containerisiert; Migrationstests regelmäßig durchgeführt.'
+        ]
+      },
+      {
+        id: 'B4', name: 'Standards & Schnittstellen',
+        levels: [
+          'Proprietäre Schnittstellen; keine offenen Standards verwendet.',
+          'Offene Standards punktuell genutzt, ohne verbindliche Vorgaben.',
+          'Offene Schnittstellen und etablierte Standards organisationsweit verankert.',
+          'Standards verbindlich; Interoperabilität regelmäßig getestet und nachgewiesen.',
+          'Aktive Mitgestaltung relevanter Standards; Referenzimplementierungen bereitgestellt.'
+        ]
+      },
+      {
+        id: 'B5', name: 'Software-Abhängigkeiten',
+        levels: [
+          'Starke Lock-in-Situation; keine Alternativen zu proprietären Produkten vorhanden.',
+          'Lock-in erkannt, aber keine konkreten Maßnahmen zur Reduktion eingeleitet.',
+          'Abhängigkeiten inventarisiert; Alternativoptionen für kritische Systeme identifiziert.',
+          'Lock-in-Risiken aktiv reduziert; Open-Source-Alternativen eingesetzt.',
+          'Keine kritischen proprietären Abhängigkeiten; vollständige Wahlfreiheit bei Anbietern.'
+        ]
+      }
+    ]
+  },
+  C: {
+    title: 'Informationen und Daten',
+    criteria: [
+      {
+        id: 'C1', name: 'Datenlokation',
+        levels: [
+          'Datenstandorte unbekannt; keine Kontrolle über Speicherung oder Verarbeitung.',
+          'Standorte teilweise bekannt, aber keine vertragliche Absicherung.',
+          'Datenlokation vertraglich geregelt; EU-Standorte für kritische Daten vorgeschrieben.',
+          'Vollständige Kontrolle über Datenlokation; regelmäßige Compliance-Prüfungen.',
+          'Datenlokation jederzeit in Echtzeit nachvollziehbar; souveräner Eigenbetrieb möglich.'
+        ]
+      },
+      {
+        id: 'C2', name: 'Datensicherheit',
+        levels: [
+          'Keine oder unzureichende Verschlüsselung; kein Sicherheitskonzept vorhanden.',
+          'Basische Verschlüsselung vorhanden, aber ohne End-to-End-Konzept.',
+          'Umfassendes Datensicherheitskonzept; Ende-zu-Ende-Verschlüsselung implementiert.',
+          'Sicherheitsmaßnahmen regelmäßig überprüft und an Bedrohungslage angepasst.',
+          'Zero-Trust-Architektur; kontinuierliche automatisierte Sicherheitsüberwachung.'
+        ]
+      },
+      {
+        id: 'C3', name: 'Datenschutz',
+        levels: [
+          'Keine DSGVO-konforme Verarbeitung; rechtliche Risiken nicht adressiert.',
+          'Datenschutzmaßnahmen vorhanden, aber lückenhaft und nicht systematisch.',
+          'DSGVO-Konformität durch technische und organisatorische Maßnahmen abgesichert.',
+          'Datenschutz regelmäßig auditiert; Datenschutzfolgeabschätzungen für alle Systeme.',
+          'Privacy by Design konsequent umgesetzt; Datenschutz als Wettbewerbsvorteil genutzt.'
+        ]
+      },
+      {
+        id: 'C4', name: 'Datenstrukturen',
+        levels: [
+          'Proprietäre, inkompatible Datenformate; Portabilität nicht möglich.',
+          'Teils offene Formate, aber keine verbindlichen Vorgaben.',
+          'Daten in offenen, interoperablen Formaten; Portabilität gewährleistet.',
+          'Offene Formate verbindlich; Datenmigration zwischen Systemen regelmäßig getestet.',
+          'Vollständige Datenportabilität; maschinenlesbare Metadaten und Wiederverwendbarkeit.'
+        ]
+      }
+    ]
+  },
+  D: {
+    title: 'Betrieb und Infrastruktur',
+    criteria: [
+      {
+        id: 'D1', name: 'Provider-Abhängigkeit',
+        levels: [
+          'Vollständige Abhängigkeit von einem einzelnen, nicht EU-kontrollierbaren Anbieter.',
+          'Abhängigkeit erkannt; erste Schritte zur Diversifizierung eingeleitet.',
+          'Mehrere Anbieter; EU-Recht auf alle Betreiber anwendbar.',
+          'Anbieter systematisch diversifiziert; Exit-Optionen vertraglich gesichert.',
+          'Multi-Cloud-fähig; Betrieb kann jederzeit eigenständig übernommen werden.'
+        ]
+      },
+      {
+        id: 'D2', name: 'Kundenverhältnis',
+        levels: [
+          'Kein Einfluss auf Produkt- oder Releaseplanung des Anbieters.',
+          'Punktuelle Rückmeldungen möglich, ohne strukturierten Einfluss.',
+          'Transparente Release-Planung; aktives Anforderungsmanagement etabliert.',
+          'Regelmäßiger strukturierter Austausch; Anforderungen fließen in Roadmap ein.',
+          'Strategische Partnerschaft; Mitgestaltung von Produktentwicklung und Governance.'
+        ]
+      },
+      {
+        id: 'D3', name: 'Exit-Fähigkeit',
+        levels: [
+          'Anbieterwechsel praktisch nicht möglich; keine Exit-Strategie vorhanden.',
+          'Exit-Strategie konzipiert, aber nicht erprobt oder vertraglich ungesichert.',
+          'Exit-Strategie dokumentiert und vertraglich abgesichert.',
+          'Exit-Strategie erprobt; Datenmigration und Betriebsübernahme erfolgreich getestet.',
+          'Anbieterwechsel jederzeit und ohne wesentlichen Betriebsunterbrechungen möglich.'
+        ]
+      },
+      {
+        id: 'D4', name: 'Resilienz & Business Continuity',
+        levels: [
+          'Keine Redundanzen; Systemausfälle führen zu langen Betriebsunterbrechungen.',
+          'Basische Backup-Konzepte vorhanden; kein getesteter Wiederanlaufplan.',
+          'Redundanzen definiert; Business-Continuity-Plan dokumentiert und bekannt.',
+          'BCM regelmäßig getestet; RTO und RPO vertraglich gesichert und eingehalten.',
+          'Vollautomatisiertes Failover; Systeme nachweislich widerstandsfähig gegen Krisen.'
+        ]
+      },
+      {
+        id: 'D5', name: 'Sicherheit & Compliance',
+        levels: [
+          'Keine systematische Überprüfung regulatorischer Anforderungen im Betrieb.',
+          'Compliance ad hoc überprüft; wesentliche Lücken bekannt, aber nicht geschlossen.',
+          'Regulatorische Anforderungen (NIS2, DSGVO etc.) systematisch im Betrieb umgesetzt.',
+          'Compliance kontinuierlich überwacht; Abweichungen automatisch eskaliert.',
+          'Zertifizierter Betrieb (BSI C5, ISO 27001); Compliance als messbarer KPI gesteuert.'
+        ]
+      }
+    ]
+  }
+};
+
+const assessmentValues = {};
+
+function buildMatrix(catKey) {
+  const cat = CATEGORIES[catKey];
+  const el = document.getElementById('matrix-' + catKey);
+  if (!el) return;
+
+  const colHeaders = ['Kriterium', ...LEVELS.map(l => `<span class="level-num">${l.num}</span><span class="level-name">${l.name}</span>`)];
+  let html = colHeaders.map((h, i) => `<div class="matrix-cell col-header">${h}</div>`).join('');
+
+  cat.criteria.forEach(crit => {
+    html += `<div class="matrix-cell row-header"><span class="crit-id">${crit.id}</span><span class="crit-name">${crit.name}</span></div>`;
+    crit.levels.forEach((text, i) => {
+      html += `<div class="matrix-cell l${i + 1}">${text}</div>`;
+    });
+  });
+
+  el.innerHTML = html;
+}
+
+function buildAssessment() {
+  const container = document.getElementById('assessment-container');
+  let html = '';
+
+  Object.entries(CATEGORIES).forEach(([catKey, cat]) => {
+    html += `<div class="assessment-section">
+      <div class="assessment-title">${catKey} · ${cat.title}</div>
+      <div class="assess-grid">`;
+
+    cat.criteria.forEach(crit => {
+      if (!(crit.id in assessmentValues)) assessmentValues[crit.id] = 1;
+      html += `<div class="assess-card" id="card-${crit.id}">
+        <div class="assess-card-header">
+          <span class="assess-crit"><strong>${crit.id}</strong> · ${crit.name}</span>
+          <select class="assess-select" onchange="updateLevel('${crit.id}', this.value)">
+            ${LEVELS.map(l => `<option value="${l.num}"${l.num === assessmentValues[crit.id] ? ' selected' : ''}>Stufe ${l.num} – ${l.name}</option>`).join('')}
+          </select>
+        </div>
+        <div class="assess-level-label" id="desc-${crit.id}">${crit.levels[assessmentValues[crit.id] - 1]}</div>
+        <div class="level-bar"><div class="level-fill" id="fill-${crit.id}" style="width:${assessmentValues[crit.id] * 20}%;background:${LEVELS[assessmentValues[crit.id]-1].color}"></div></div>
+      </div>`;
+    });
+
+    html += `</div></div>`;
+  });
+
+  container.innerHTML = html;
+  updateSummary();
+}
+
+function updateLevel(id, val) {
+  val = parseInt(val);
+  assessmentValues[id] = val;
+  const lv = LEVELS[val - 1];
+  document.getElementById('fill-' + id).style.width = (val * 20) + '%';
+  document.getElementById('fill-' + id).style.background = lv.color;
+
+  let crit = null;
+  Object.values(CATEGORIES).forEach(cat => {
+    cat.criteria.forEach(c => { if (c.id === id) crit = c; });
+  });
+  if (crit) document.getElementById('desc-' + id).textContent = crit.levels[val - 1];
+
+  updateSummary();
+}
+
+function updateSummary() {
+  const allCriteria = Object.values(CATEGORIES).flatMap(c => c.criteria);
+  const total = allCriteria.reduce((s, c) => s + (assessmentValues[c.id] || 1), 0);
+  const max = allCriteria.length * 5;
+  const pct = Math.round((total / max) * 100);
+  const avg = total / allCriteria.length;
+
+  document.getElementById('total-score').textContent = total;
+  document.getElementById('total-max').textContent = max;
+  document.getElementById('pct-label').textContent = pct + '%';
+  document.getElementById('overall-fill').style.width = pct + '%';
+
+  const badge = document.getElementById('maturity-badge');
+  let lv;
+  if (avg < 1.5) lv = LEVELS[0];
+  else if (avg < 2.5) lv = LEVELS[1];
+  else if (avg < 3.5) lv = LEVELS[2];
+  else if (avg < 4.5) lv = LEVELS[3];
+  else lv = LEVELS[4];
+
+  badge.textContent = 'Stufe ' + lv.num + ' · ' + lv.name;
+  badge.style.background = lv.bg;
+  badge.style.color = lv.color;
+  badge.style.border = '1px solid ' + lv.border;
+
+  updateOverviewCards();
+}
+
+function buildOverviewCards() {
+  const el = document.getElementById('overview-cards');
+  let html = '';
+  Object.entries(CATEGORIES).forEach(([key, cat]) => {
+    const n = cat.criteria.length;
+    const total = cat.criteria.reduce((s, c) => s + (assessmentValues[c.id] || 1), 0);
+    const max = n * 5;
+    const pct = Math.round((total / max) * 100);
+    const avg = total / n;
+    const lv = LEVELS[Math.min(4, Math.max(0, Math.round(avg) - 1))];
+
+    html += `<div class="overview-card">
+      <div class="ov-card-header">
+        <span class="ov-letter">${key}</span>
+        <span class="ov-title">${cat.title}</span>
+      </div>
+      <div class="ov-score-row" id="ov-score-${key}">
+        <div>
+          <div style="font-size:10px;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">Ø Reifegrad</div>
+          <span class="ov-score-num" style="color:${lv.color}">${avg.toFixed(1)}</span>
+          <span class="ov-score-max"> / 5</span>
+        </div>
+        <div class="maturity-badge" style="background:${lv.bg};color:${lv.color};border:1px solid ${lv.border}">${lv.name}</div>
+      </div>
+      <div class="level-bar" style="margin-top:8px"><div class="level-fill" id="ov-fill-${key}" style="width:${pct}%;background:${lv.color}"></div></div>
+      <div style="font-size:10px;color:var(--text-muted);margin-top:6px">${n} Kriterien · ${total} / ${max} Punkte</div>
+      <button onclick="showTab('${key}')" style="margin-top:12px;font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;background:none;border:1px solid var(--border);border-radius:4px;padding:5px 12px;cursor:pointer;color:var(--text-muted);width:100%;">Details ansehen →</button>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+function updateOverviewCards() {
+  Object.entries(CATEGORIES).forEach(([key, cat]) => {
+    const n = cat.criteria.length;
+    const total = cat.criteria.reduce((s, c) => s + (assessmentValues[c.id] || 1), 0);
+    const max = n * 5;
+    const pct = Math.round((total / max) * 100);
+    const avg = total / n;
+    const lv = LEVELS[Math.min(4, Math.max(0, Math.round(avg) - 1))];
+
+    const scoreEl = document.getElementById('ov-score-' + key);
+    const fillEl = document.getElementById('ov-fill-' + key);
+    if (scoreEl) {
+      scoreEl.querySelector('.ov-score-num').textContent = avg.toFixed(1);
+      scoreEl.querySelector('.ov-score-num').style.color = lv.color;
+      scoreEl.querySelector('.maturity-badge').textContent = lv.name;
+      scoreEl.querySelector('.maturity-badge').style.background = lv.bg;
+      scoreEl.querySelector('.maturity-badge').style.color = lv.color;
+    }
+    if (fillEl) {
+      fillEl.style.width = pct + '%';
+      fillEl.style.background = lv.color;
+    }
+  });
+}
+
+function showTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+
+  const btns = document.querySelectorAll('.tab-btn');
+  const tabMap = { overview: 0, A: 1, B: 2, C: 3, D: 4, assess: 5 };
+  btns[tabMap[id]].classList.add('active');
+}
+
+function exportResults() {
+  const allCriteria = Object.values(CATEGORIES).flatMap(c => c.criteria);
+  let csv = 'Kriterium,Name,Stufe,Bezeichnung\n';
+  allCriteria.forEach(c => {
+    const val = assessmentValues[c.id] || 1;
+    csv += `${c.id},"${c.name}",${val},"${LEVELS[val-1].name}"\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'souveraenitaet-bewertung.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Init
+Object.keys(CATEGORIES).forEach(k => buildMatrix(k));
+buildOverviewCards();
+buildAssessment();
+</script>
+</body>
+</html>
