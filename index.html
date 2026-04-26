@@ -148,26 +148,14 @@
   }
 
   .category-header {
-    display: flex;
-    align-items: baseline;
-    gap: 1rem;
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid var(--border);
   }
 
-  .category-letter {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 3rem;
-    line-height: 1;
-    color: var(--accent);
-    opacity: 0.25;
-  }
-
   .category-info h2 {
     font-family: var(--font-display);
-    font-weight: 300;
+    font-weight: 400;
     font-size: 1.5rem;
     color: var(--text);
   }
@@ -179,95 +167,6 @@
     max-width: 700px;
   }
 
-  .core-question {
-    display: inline-block;
-    margin-top: 0.75rem;
-    background: var(--accent-light);
-    border-left: 3px solid var(--accent);
-    padding: 6px 12px;
-    border-radius: 0 var(--radius) var(--radius) 0;
-    font-size: 11px;
-    color: var(--accent);
-    font-style: italic;
-  }
-
-  .matrix {
-    display: grid;
-    grid-template-columns: 200px repeat(5, 1fr);
-    gap: 2px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-
-  .matrix-cell {
-    background: var(--surface);
-    padding: 10px 12px;
-    font-size: 11.5px;
-    line-height: 1.5;
-    color: var(--text);
-    transition: background var(--transition);
-  }
-
-  .matrix-cell.col-header {
-    background: var(--accent);
-    color: #FFFFFF;
-    text-align: center;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    padding: 10px 8px;
-  }
-
-  .level-num {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 2px;
-  }
-
-  .level-name {
-    display: block;
-    font-size: 9px;
-    opacity: 0.7;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  .matrix-cell.row-header {
-    background: var(--surface2);
-    border-right: 2px solid var(--border);
-  }
-
-  .crit-id {
-    display: block;
-    font-size: 9px;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    color: var(--text-muted);
-    margin-bottom: 3px;
-  }
-
-  .crit-name {
-    display: block;
-    font-weight: 500;
-    font-size: 12px;
-    color: var(--text);
-    line-height: 1.35;
-  }
-
-  .matrix-cell.l1 { background: var(--l1-bg); border-left: 3px solid var(--l1-border); color: #5C1A13; }
-  .matrix-cell.l2 { background: var(--l2-bg); border-left: 3px solid var(--l2-border); color: #6B4407; }
-  .matrix-cell.l3 { background: var(--l3-bg); border-left: 3px solid var(--l3-border); color: #0E2D45; }
-  .matrix-cell.l4 { background: var(--l4-bg); border-left: 3px solid var(--l4-border); color: #0D4025; }
-  .matrix-cell.l5 { background: var(--l5-bg); border-left: 3px solid var(--l5-border); color: #073D33; }
-
-  .matrix-cell.l1:hover { background: #FAD8D3; }
-  .matrix-cell.l2:hover { background: #FAEFBB; }
-  .matrix-cell.l3:hover { background: #D3E8F7; }
-  .matrix-cell.l4:hover { background: #C8EDD8; }
-  .matrix-cell.l5:hover { background: #B3E8DC; }
 
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
@@ -705,10 +604,6 @@
 <main>
   <div class="tab-nav">
     <button class="tab-btn active" onclick="showTab('overview')"><span class="tab-label">↗</span>Übersicht</button>
-    <button class="tab-btn" onclick="showTab('A')"><span class="tab-label">A</span>Organisation</button>
-    <button class="tab-btn" onclick="showTab('B')"><span class="tab-label">B</span>Anwendungen</button>
-    <button class="tab-btn" onclick="showTab('C')"><span class="tab-label">C</span>Daten</button>
-    <button class="tab-btn" onclick="showTab('D')"><span class="tab-label">D</span>Betrieb</button>
     <button class="tab-btn" onclick="showTab('assess')"><span class="tab-label">✓</span>Bewertung</button>
   </div>
 
@@ -721,58 +616,6 @@
       </div>
     </div>
     <div class="overview-panel" id="overview-cards"></div>
-  </div>
-
-  <!-- CATEGORY A -->
-  <div id="tab-A" class="tab-panel">
-    <div class="category-header">
-      <div class="category-letter">A</div>
-      <div class="category-info">
-        <h2>Organisation und Fähigkeiten</h2>
-        <p>Bewertet die Management- und Steuerungsfähigkeit einer Organisation hinsichtlich digital souveräner IT-Dienste.</p>
-        <span class="core-question">Ist die Organisation überhaupt in der Lage, Digitale Souveränität aktiv zu steuern?</span>
-      </div>
-    </div>
-    <div class="matrix" id="matrix-A"></div>
-  </div>
-
-  <!-- CATEGORY B -->
-  <div id="tab-B" class="tab-panel">
-    <div class="category-header">
-      <div class="category-letter">B</div>
-      <div class="category-info">
-        <h2>Digitale Anwendungen und Dienste</h2>
-        <p>Bewertet die Gestalt- und Austauschbarkeit genutzter Anwendungen sowie die Kontrolle über digitale Dienste.</p>
-        <span class="core-question">Ermöglichen die Anwendungen technologische Selbstbestimmung – oder führen sie zu Abhängigkeiten?</span>
-      </div>
-    </div>
-    <div class="matrix" id="matrix-B"></div>
-  </div>
-
-  <!-- CATEGORY C -->
-  <div id="tab-C" class="tab-panel">
-    <div class="category-header">
-      <div class="category-letter">C</div>
-      <div class="category-info">
-        <h2>Informationen und Daten</h2>
-        <p>Überprüft, inwieweit Datenhoheit und Datensouveränität gewährleistet sind – technisch, rechtlich und betrieblich.</p>
-        <span class="core-question">Können Behörden jederzeit die volle Kontrolle über ihre Daten ausüben?</span>
-      </div>
-    </div>
-    <div class="matrix" id="matrix-C"></div>
-  </div>
-
-  <!-- CATEGORY D -->
-  <div id="tab-D" class="tab-panel">
-    <div class="category-header">
-      <div class="category-letter">D</div>
-      <div class="category-info">
-        <h2>Betrieb und Infrastruktur</h2>
-        <p>Bewertet die technische und organisatorische Betriebssouveränität und Unabhängigkeit gegenüber externen Einflüssen.</p>
-        <span class="core-question">Kann die Verwaltung ihre Systeme dauerhaft, sicher und unabhängig betreiben?</span>
-      </div>
-    </div>
-    <div class="matrix" id="matrix-D"></div>
   </div>
 
   <!-- ASSESSMENT -->
@@ -1050,23 +893,6 @@ const CATEGORIES = {
 
 const assessmentValues = {};
 
-function buildMatrix(catKey) {
-  const cat = CATEGORIES[catKey];
-  const el = document.getElementById('matrix-' + catKey);
-  if (!el) return;
-
-  const colHeaders = ['Kriterium', ...LEVELS.map(l => `<span class="level-num">${l.num}</span><span class="level-name">${l.name}</span>`)];
-  let html = colHeaders.map((h, i) => `<div class="matrix-cell col-header">${h}</div>`).join('');
-
-  cat.criteria.forEach(crit => {
-    html += `<div class="matrix-cell row-header"><span class="crit-id">${crit.id}</span><span class="crit-name">${crit.name}</span></div>`;
-    crit.levels.forEach((text, i) => {
-      html += `<div class="matrix-cell l${i + 1}">${text}</div>`;
-    });
-  });
-
-  el.innerHTML = html;
-}
 
 function buildAssessment() {
   const container = document.getElementById('assessment-container');
@@ -1278,7 +1104,7 @@ function buildOverviewCards() {
       </div>
       <div class="level-bar" style="margin-top:8px"><div class="level-fill" id="ov-fill-${key}" style="width:${pct}%;background:${lv.color}"></div></div>
       <div style="font-size:10px;color:var(--text-muted);margin-top:6px">${n} Kriterien · ${total} / ${max} Punkte</div>
-      <button onclick="showTab('${key}')" style="margin-top:12px;font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;background:none;border:1px solid var(--border);border-radius:4px;padding:5px 12px;cursor:pointer;color:var(--text-muted);width:100%;">Details ansehen →</button>
+      <button onclick="showTab('assess')" style="margin-top:12px;font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;background:none;border:1px solid var(--border);border-radius:4px;padding:5px 12px;cursor:pointer;color:var(--text-muted);width:100%;">Zur Bewertung →</button>
     </div>`;
   });
   el.innerHTML = html;
@@ -1313,10 +1139,8 @@ function showTab(id) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + id).classList.add('active');
-
-  const btns = document.querySelectorAll('.tab-btn');
-  const tabMap = { overview: 0, A: 1, B: 2, C: 3, D: 4, assess: 5 };
-  btns[tabMap[id]].classList.add('active');
+  const tabMap = { overview: 0, assess: 1 };
+  document.querySelectorAll('.tab-btn')[tabMap[id]].classList.add('active');
 }
 
 function exportResults() {
@@ -1400,7 +1224,6 @@ function exportJSON() {
 }
 
 // Init
-Object.keys(CATEGORIES).forEach(k => buildMatrix(k));
 buildOverviewCards();
 buildAssessment();
 
