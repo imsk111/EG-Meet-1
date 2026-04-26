@@ -288,63 +288,108 @@
     color: var(--text);
   }
 
-  .assess-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem;
-  }
-
-  .assess-card {
+  .assess-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 1rem;
-  }
-
-  .assess-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.75rem;
-  }
-
-  .assess-crit {
-    font-weight: 500;
-    font-size: 12px;
-  }
-
-  .assess-select {
-    font-family: var(--font-body);
-    font-size: 11px;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    background: var(--bg);
-    color: var(--text);
-    padding: 4px 8px;
-    cursor: pointer;
-    outline: none;
-  }
-
-  .assess-select:focus { border-color: var(--accent); }
-
-  .level-bar {
-    height: 6px;
-    background: var(--surface2);
-    border-radius: 3px;
     overflow: hidden;
-    margin-top: 8px;
+    table-layout: fixed;
   }
 
-  .level-fill {
-    height: 100%;
-    border-radius: 3px;
-    transition: width 0.4s ease, background 0.4s ease;
-  }
-
-  .assess-level-label {
+  .assess-th-crit {
+    width: 160px;
+    background: var(--accent);
+    color: #fff;
+    text-align: left;
+    padding: 10px 14px;
     font-size: 10px;
-    color: var(--text-muted);
-    margin-top: 4px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
+
+  .assess-th-level {
+    text-align: center;
+    padding: 8px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--surface2);
+    border-left: 1px solid var(--border);
+    letter-spacing: 0.05em;
+  }
+
+  .assess-th-level .th-num {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+
+  .assess-th-level .th-name {
+    display: block;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.85;
+  }
+
+  .assess-td-crit {
+    padding: 12px 14px;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    border-right: 2px solid var(--border);
+    vertical-align: middle;
+  }
+
+  .assess-td-crit .crit-id {
+    display: block;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    margin-bottom: 3px;
+  }
+
+  .assess-td-crit .crit-name {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .assess-td-opt {
+    padding: 10px 12px;
+    border-top: 1px solid var(--border);
+    border-left: 1px solid var(--border);
+    cursor: pointer;
+    vertical-align: top;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--text-muted);
+    transition: background var(--transition);
+    border-bottom: 3px solid transparent;
+    position: relative;
+  }
+
+  .assess-td-opt:hover { background: var(--surface2); color: var(--text); }
+
+  .assess-td-opt.selected {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .opt-check {
+    display: none;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .assess-td-opt.selected .opt-check { display: block; }
 
   .summary-bar {
     margin-top: 2rem;
@@ -1028,25 +1073,48 @@ function buildAssessment() {
   let html = '';
 
   Object.entries(CATEGORIES).forEach(([catKey, cat]) => {
-    html += `<div class="assessment-section">
-      <div class="assessment-title">${catKey} · ${cat.title}</div>
-      <div class="assess-grid">`;
+    cat.criteria.forEach(c => { if (!(c.id in assessmentValues)) assessmentValues[c.id] = 1; });
 
-    cat.criteria.forEach(crit => {
-      if (!(crit.id in assessmentValues)) assessmentValues[crit.id] = 1;
-      html += `<div class="assess-card" id="card-${crit.id}">
-        <div class="assess-card-header">
-          <span class="assess-crit"><strong>${crit.id}</strong> · ${crit.name}</span>
-          <select class="assess-select" onchange="updateLevel('${crit.id}', this.value)">
-            ${LEVELS.map(l => `<option value="${l.num}"${l.num === assessmentValues[crit.id] ? ' selected' : ''}>Stufe ${l.num} – ${l.name}</option>`).join('')}
-          </select>
-        </div>
-        <div class="assess-level-label" id="desc-${crit.id}">${crit.levels[assessmentValues[crit.id] - 1]}</div>
-        <div class="level-bar"><div class="level-fill" id="fill-${crit.id}" style="width:${assessmentValues[crit.id] * 20}%;background:${LEVELS[assessmentValues[crit.id]-1].color}"></div></div>
+    const headerCols = LEVELS.map(l =>
+      `<th class="assess-th-level" style="border-top:3px solid ${l.color}">
+        <span class="th-num" style="color:${l.color}">${l.num}</span>
+        <span class="th-name" style="color:${l.color}">${l.name}</span>
+      </th>`
+    ).join('');
+
+    const rows = cat.criteria.map(crit => {
+      const val = assessmentValues[crit.id] || 1;
+      const cols = LEVELS.map(l => {
+        const sel = l.num === val;
+        return `<td class="assess-td-opt${sel ? ' selected' : ''}"
+          id="opt-${crit.id}-${l.num}"
+          onclick="updateLevel('${crit.id}', ${l.num})"
+          style="${sel ? `background:${l.bg};border-bottom-color:${l.color};` : ''}">
+          <span class="opt-check" style="color:${l.color}">✓ ${l.name}</span>
+          <span class="opt-text">${crit.levels[l.num - 1]}</span>
+        </td>`;
+      }).join('');
+
+      return `<tr>
+        <td class="assess-td-crit">
+          <span class="crit-id">${crit.id}</span>
+          <span class="crit-name">${crit.name}</span>
+        </td>
+        ${cols}
+      </tr>`;
+    }).join('');
+
+    html += `
+      <div class="assessment-section">
+        <div class="assessment-title">${catKey} · ${cat.title}</div>
+        <table class="assess-table">
+          <thead><tr>
+            <th class="assess-th-crit">Kriterium</th>
+            ${headerCols}
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
       </div>`;
-    });
-
-    html += `</div></div>`;
   });
 
   container.innerHTML = html;
@@ -1056,15 +1124,15 @@ function buildAssessment() {
 function updateLevel(id, val) {
   val = parseInt(val);
   assessmentValues[id] = val;
-  const lv = LEVELS[val - 1];
-  document.getElementById('fill-' + id).style.width = (val * 20) + '%';
-  document.getElementById('fill-' + id).style.background = lv.color;
 
-  let crit = null;
-  Object.values(CATEGORIES).forEach(cat => {
-    cat.criteria.forEach(c => { if (c.id === id) crit = c; });
+  LEVELS.forEach(l => {
+    const cell = document.getElementById(`opt-${id}-${l.num}`);
+    if (!cell) return;
+    const sel = l.num === val;
+    cell.className = 'assess-td-opt' + (sel ? ' selected' : '');
+    cell.style.background = sel ? l.bg : '';
+    cell.style.borderBottomColor = sel ? l.color : 'transparent';
   });
-  if (crit) document.getElementById('desc-' + id).textContent = crit.levels[val - 1];
 
   updateSummary();
   scheduleSave();
