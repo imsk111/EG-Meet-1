@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const PORT = process.env.PORT || 3000;
-const FILE = path.join(__dirname, 'souveraenitaet-reifegradmodell.html');
+const FILE = path.join(__dirname, 'index.html');
 
 http.createServer((req, res) => {
   if (req.url !== '/' && req.url !== '/index.html') {
