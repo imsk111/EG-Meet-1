@@ -52,7 +52,7 @@
     max-width: 1300px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr auto auto;
     align-items: end;
     gap: 2rem;
   }
@@ -485,15 +485,167 @@
     letter-spacing: 0.08em;
     border-top: 1px solid var(--border);
   }
+
+  /* Login Modal */
+  .login-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 999;
+  }
+  .login-overlay.hidden { display: none; }
+
+  .login-modal {
+    background: #fff;
+    border-radius: 12px;
+    width: 100%; max-width: 420px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  }
+
+  .login-modal-head {
+    background: var(--header-bg);
+    padding: 2rem 2rem 1.5rem;
+    color: #fff;
+  }
+
+  .login-pd-mark {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--yellow);
+    margin-bottom: 0.25rem;
+  }
+
+  .login-modal-head h2 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1rem;
+    color: rgba(255,255,255,0.9);
+    line-height: 1.4;
+  }
+
+  .login-modal-body { padding: 1.75rem 2rem 2rem; }
+
+  .login-modal-body p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+  }
+
+  .login-input {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 14px;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    outline: none;
+    color: var(--text);
+    background: var(--bg);
+    transition: border-color var(--transition);
+  }
+  .login-input:focus { border-color: var(--accent); }
+
+  .login-error {
+    font-size: 11px;
+    color: #C0392B;
+    margin-top: 6px;
+  }
+
+  .login-btn {
+    margin-top: 1.25rem;
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 11px 0;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: opacity var(--transition);
+  }
+  .login-btn:hover { opacity: 0.85; }
+
+  /* User badge in header */
+  .user-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+
+  .user-badge-name {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--yellow);
+    letter-spacing: 0.02em;
+  }
+
+  .user-badge-meta {
+    font-size: 10px;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.08em;
+  }
+
+  .logout-btn {
+    font-family: var(--font-body);
+    font-size: 10px;
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.8);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 4px;
+    padding: 3px 10px;
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    transition: background var(--transition);
+  }
+  .logout-btn:hover { background: rgba(255,255,255,0.22); }
+
+  .save-status {
+    font-size: 10px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.06em;
+    margin-top: 2px;
+    min-height: 14px;
+  }
 </style>
 </head>
 <body>
+
+<div class="login-overlay" id="login-overlay">
+  <div class="login-modal">
+    <div class="login-modal-head">
+      <div class="login-pd-mark">PD</div>
+      <h2>Digitale Souveränität<br>Reifegradmodell</h2>
+    </div>
+    <div class="login-modal-body">
+      <p>Geben Sie Ihren Benutzernamen ein. Existierende Bewertungen werden automatisch geladen.</p>
+      <input id="login-input" class="login-input" type="text" placeholder="Benutzername" maxlength="50"
+             onkeydown="if(event.key==='Enter') doLogin()" />
+      <div id="login-error" class="login-error" style="display:none"></div>
+      <button class="login-btn" onclick="doLogin()">Weiter →</button>
+    </div>
+  </div>
+</div>
 
 <header>
   <div class="header-inner">
     <div>
       <div class="header-label">PD – Berater der öffentlichen Hand · März 2026</div>
       <h1>Digitale <em>Souveränität</em><br>Reifegradmodell</h1>
+    </div>
+    <div id="user-badge" class="user-badge" style="display:none">
+      <div class="user-badge-name" id="user-badge-name"></div>
+      <div class="user-badge-meta">Angemeldet</div>
+      <div class="save-status" id="save-status"></div>
+      <button class="logout-btn" onclick="logout()">Abmelden</button>
     </div>
     <div class="legend">
       <div class="legend-item"><div class="legend-dot" style="background:#C0392B"></div>1 · Initial</div>
@@ -915,6 +1067,93 @@ function updateLevel(id, val) {
   if (crit) document.getElementById('desc-' + id).textContent = crit.levels[val - 1];
 
   updateSummary();
+  scheduleSave();
+}
+
+// ── User / Login ─────────────────────────────────────────────────────────────
+
+let currentUser = null;
+let saveTimer = null;
+
+function showLoginModal() {
+  document.getElementById('login-overlay').classList.remove('hidden');
+  setTimeout(() => document.getElementById('login-input').focus(), 100);
+}
+
+function hideLoginModal() {
+  document.getElementById('login-overlay').classList.add('hidden');
+}
+
+function setLoginError(msg) {
+  const el = document.getElementById('login-error');
+  el.textContent = msg;
+  el.style.display = msg ? 'block' : 'none';
+}
+
+async function doLogin() {
+  const input = document.getElementById('login-input');
+  const username = input.value.trim();
+  if (username.length < 2) { setLoginError('Mindestens 2 Zeichen erforderlich.'); return; }
+  setLoginError('');
+
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username })
+    });
+    const data = await res.json();
+    if (!res.ok) { setLoginError(data.error || 'Fehler beim Anmelden.'); return; }
+
+    currentUser = data.username;
+
+    if (Object.keys(data.assessment).length > 0) {
+      Object.assign(assessmentValues, data.assessment);
+      buildAssessment();
+    }
+
+    hideLoginModal();
+    document.getElementById('user-badge').style.display = 'flex';
+    document.getElementById('user-badge-name').textContent = currentUser;
+    localStorage.setItem('pd_username', currentUser);
+  } catch {
+    setLoginError('Verbindungsfehler. Bitte Seite neu laden.');
+  }
+}
+
+function logout() {
+  currentUser = null;
+  localStorage.removeItem('pd_username');
+  document.getElementById('user-badge').style.display = 'none';
+
+  // Reset assessment to defaults
+  const allCriteria = Object.values(CATEGORIES).flatMap(c => c.criteria);
+  allCriteria.forEach(c => { assessmentValues[c.id] = 1; });
+  buildAssessment();
+
+  document.getElementById('login-input').value = '';
+  setLoginError('');
+  showLoginModal();
+}
+
+function scheduleSave() {
+  if (!currentUser) return;
+  const el = document.getElementById('save-status');
+  el.textContent = 'Speichern …';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try {
+      await fetch(`/api/assessment/${encodeURIComponent(currentUser)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ assessment: assessmentValues })
+      });
+      el.textContent = 'Gespeichert ✓';
+      setTimeout(() => { el.textContent = ''; }, 2000);
+    } catch {
+      el.textContent = 'Fehler beim Speichern';
+    }
+  }, 800);
 }
 
 function updateSummary() {
@@ -1096,6 +1335,14 @@ function exportJSON() {
 Object.keys(CATEGORIES).forEach(k => buildMatrix(k));
 buildOverviewCards();
 buildAssessment();
+
+const savedUser = localStorage.getItem('pd_username');
+if (savedUser) {
+  document.getElementById('login-input').value = savedUser;
+  doLogin();
+} else {
+  showLoginModal();
+}
 </script>
 </body>
 </html>
