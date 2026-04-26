@@ -609,7 +609,6 @@
           <div class="maturity-badge" id="maturity-badge" style="background:var(--l1-bg);color:var(--l1);">Initial</div>
         </div>
         <button class="export-btn" onclick="exportResults()">↓ Export CSV</button>
-        <button class="export-btn" onclick="exportJSON()" style="margin-left:8px;background:var(--l3);">↓ Export JSON</button>
       </div>
     </div>
   </div>
@@ -1021,72 +1020,6 @@ function exportResults() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = 'souveraenitaet-bewertung.csv'; a.click();
-  URL.revokeObjectURL(url);
-}
-
-function exportJSON() {
-  const allCriteria = Object.values(CATEGORIES).flatMap(c => c.criteria);
-  const total = allCriteria.reduce((s, c) => s + (assessmentValues[c.id] || 1), 0);
-  const max = allCriteria.length * 5;
-  const avg = total / allCriteria.length;
-
-  let overallLevel;
-  if (avg < 1.5) overallLevel = LEVELS[0];
-  else if (avg < 2.5) overallLevel = LEVELS[1];
-  else if (avg < 3.5) overallLevel = LEVELS[2];
-  else if (avg < 4.5) overallLevel = LEVELS[3];
-  else overallLevel = LEVELS[4];
-
-  const kategorien = Object.entries(CATEGORIES).map(([key, cat]) => {
-    const catTotal = cat.criteria.reduce((s, c) => s + (assessmentValues[c.id] || 1), 0);
-    const catMax = cat.criteria.length * 5;
-    const catAvg = catTotal / cat.criteria.length;
-    let catLevel;
-    if (catAvg < 1.5) catLevel = LEVELS[0];
-    else if (catAvg < 2.5) catLevel = LEVELS[1];
-    else if (catAvg < 3.5) catLevel = LEVELS[2];
-    else if (catAvg < 4.5) catLevel = LEVELS[3];
-    else catLevel = LEVELS[4];
-
-    return {
-      id: key,
-      name: cat.title,
-      gesamtpunkte: catTotal,
-      maximalpunkte: catMax,
-      durchschnitt: parseFloat(catAvg.toFixed(2)),
-      reifegrad: { stufe: catLevel.num, bezeichnung: catLevel.name },
-      kriterien: cat.criteria.map(c => {
-        const val = assessmentValues[c.id] || 1;
-        return {
-          id: c.id,
-          name: c.name,
-          stufe: val,
-          bezeichnung: LEVELS[val - 1].name
-        };
-      })
-    };
-  });
-
-  const result = {
-    meta: {
-      titel: 'Reifegradmodell Digitale Souveränität',
-      erstellt: new Date().toISOString(),
-      werkzeug: 'ZenDiS Souveränitäts-Reifegradmodell'
-    },
-    gesamtergebnis: {
-      gesamtpunkte: total,
-      maximalpunkte: max,
-      prozent: Math.round((total / max) * 100),
-      durchschnitt: parseFloat(avg.toFixed(2)),
-      reifegrad: { stufe: overallLevel.num, bezeichnung: overallLevel.name }
-    },
-    kategorien
-  };
-
-  const blob = new Blob([JSON.stringify(result, null, 2)], { type: 'application/json;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'souveraenitaet-bewertung.json'; a.click();
   URL.revokeObjectURL(url);
 }
 
